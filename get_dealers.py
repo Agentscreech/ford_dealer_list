@@ -11,9 +11,11 @@ def get_cities(state):
     pass
 
 def get_dealer_list(city_url):
-    dealer_list_near_city_html = requests.get("http://content.dealerconnection.com/vfs/brands/us/"+city_url)
-    dealer_list_near_city = BeautifulSoup(dealer_list_near_city_html.content, "html.parser")
-    dealer_listings = dealer_list_near_city.find_all(class_="dealerListing")
+    '''given a url of a city, returns a list of details: name, url, address, phone'''
+    dealer_list_html = requests.get("http://content.dealerconnection.com/vfs/brands/us/"+city_url)
+    if dealer_list_html.status_code == 200:
+        dealer_list_soup = BeautifulSoup(dealer_list_html.content, "html.parser")
+    dealer_listings = dealer_list_soup.find_all(class_="dealerListing")
     list_to_return = []
 
     for dealer in dealer_listings:
