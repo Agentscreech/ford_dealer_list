@@ -11,7 +11,7 @@ def get_states():
     except:
         print("get states page failed")
     states = {}
-    states_soup = BeautifulSoup(states_html, "html.parser")
+    states_soup = BeautifulSoup(states_html.content, "html.parser")
     states_list = states_soup.find_all(class_="stateListing")
     for state in states_list:
         link = state.a.get("href")
@@ -29,9 +29,9 @@ def get_cities(state):
         print("get cities page failed")
     city_urls = []
     cities_soup = BeautifulSoup(city_html.content, "html.parser")
-    cities = cites_soup.find_all("li")
+    cities = cities_soup.find_all("li")
     for city in cities:
-        city_urls.append(city.a.get_text())
+        city_urls.append(city.a.get("href"))
 
     return city_urls
 
@@ -43,7 +43,7 @@ def get_dealer_list(city_url):
     if dealer_list_html.status_code == 200:
         dealer_list_soup = BeautifulSoup(dealer_list_html.content, "html.parser")
         dealer_listings = dealer_list_soup.find_all(class_="dealerListing")
-        list_to_return = []
+        list_of_details = []
 
         for dealer in dealer_listings:
             details = []
@@ -53,14 +53,30 @@ def get_dealer_list(city_url):
             details.append(address.replace("\n", " ").split("Distance")[0].strip()) #dealer address sanitized
             phone = dealer.find(class_="dealerPhone").get_text()
             details.append(phone.split('\n')[2]) #dealer phone sanitized
-            list_to_return.append(details)
-    if len(list_to_return) > 0:
-        return list_to_return
+            list_of_details.append(details)
+    if list_of_details:
+        return list_of_details
 
 def add_to_csv(array_to_add):
     '''takes the array_to_add and adds each index's properties to a file'''
     for dealer_details in array_to_add:
 
         for detail in dealer_details:
-
+            print(detail)
             #add each item to the csv
+
+if __name__ == "__main__":
+    #do stuff on startup
+
+    state_listings = get_states()
+
+    for state_abbr in state_listings:
+        print(state_abbr, " ", end="")
+    state_selected = input("input a state abbreviation please: ")
+    if state_selected.lower() in state_listings:
+        found_cities = get_cities(state_selected.lower())
+        for city_url in found_cities:
+            detail_list = get_dealer_list(city_url)
+            add_to_csv(detail_list)
+    else:
+        print("sorry that wasn't a valid input.  Exiting")
