@@ -1,3 +1,2 @@
-Dealer Name,website,address,phone
-Harris Ford Lincoln,http://www.harrisford.com,"20006 64th ave west Lynnwood , WA 98036-5906",(888) 545-8164
-Bill Pierre Ford Inc,http//www.billpierreford.com,"11525 Lake City Way N.E Seattle , WA 98125-5327",(206) 364-2200
+Dealer Name,website,street,city,state,zip,phone
+Harris Ford Lincoln,http://www.harrisford.com,20006 64th ave west,Lynnwood,WA,98036,(888) 545-8164
