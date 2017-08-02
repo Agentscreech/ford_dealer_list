@@ -3,7 +3,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-def get_states
+def get_states():
     '''returns an dict where abbreviations of states are keys and the states are the value'''
     try:
         states_html = requests.get("http://content.dealerconnection.com/vfs/brands/us_ford_en.html")
