@@ -66,7 +66,6 @@ def get_dealer_list(city_url):
 
 def add_to_csv(array_to_add, state_csv):
     '''takes the array_to_add and adds each index's properties to a file for each state'''
-    print("adding details to ", state_csv)
     writing_file = open(state_csv, "a")
     #add each item to the csv
     for index, detail_str in enumerate(array_to_add):
