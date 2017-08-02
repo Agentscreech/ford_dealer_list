@@ -11,9 +11,9 @@ def get_states():
     except:
         print("get states page failed")
     states = {}
-    states_page = BeautifulSoup(states_html, "html.parser")
-    states_soup = states_page.find_all(class_="stateListing")
-    for state in states_soup:
+    states_soup = BeautifulSoup(states_html, "html.parser")
+    states_list = states_soup.find_all(class_="stateListing")
+    for state in states_list:
         link = state.a.get("href")
         abbr = link.split("/")[1].split("_")[0]
         value = state.a.get_text()
@@ -22,7 +22,20 @@ def get_states():
     return states
 
 def get_cities(state):
-    pass
+    '''returns a list of all urls for each city in the state'''
+    try:
+        city_html = requests.get("http://content.dealerconnection.com/vfs/brands/us/"+state+"_ford_en.html")
+    except:
+        print("get cities page failed")
+    city_urls = []
+    cities_soup = BeautifulSoup(city_html.content, "html.parser")
+    cities = cites_soup.find_all("li")
+    for city in cities:
+        city_urls.append(city.a.get_text())
+
+    return city_urls
+
+
 
 def get_dealer_list(city_url):
     '''given a url of a city, returns a list of details: name, url, address, phone'''
