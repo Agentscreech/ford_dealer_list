@@ -63,27 +63,36 @@ def get_dealer_list(city_url):
 
 def add_to_csv(array_to_add, state_csv):
     '''takes the array_to_add and adds each index's properties to a file for each state'''
+    print("adding details to ", state_csv)
+    writing_file = open(state_csv, "a")
     for dealer_details in array_to_add:
-
-        for detail in dealer_details:
-            print(detail)
-            #add each item to the csv
+        for index, detail_str in enumerate(dealer_details):
+            if "," in detail_str:
+                print("trying to replace commas in ", detail_str)
+                dealer_details[index] = detail_str.replace(',', ' ')
+                # print("after replacement ")
+        writing_file.write(dealer_details[0]+","+dealer_details[1]+","+dealer_details[2]+","+dealer_details[3]+","+dealer_details[4]+","+dealer_details[5]+","+dealer_details[6]+"\n")
+    writing_file.close()
+        #add each item to the csv
 
 if __name__ == "__main__":
 
     state_listings = get_states()
-    #should create a new .csv for each state
+    #create a new .csv for each state
     for state_abbr in state_listings:
         print(state_abbr, " ", end="")
-        temp = open("./csvs/"+state_listings[state_abbr]+".csv","w")
+        temp = open("./csvs/"+state_listings[state_abbr]+".csv", "w")
         temp.write("Dealer Name,website,street,city,state,zip,phone\n")
         temp.close()
-
+    master_list = []
     state_selected = input("input a state abbreviation please: ")
     if state_selected.lower() in state_listings:
         found_cities = get_cities(state_selected.lower())
         for url_for_city in found_cities:
             detail_list = get_dealer_list(url_for_city)
-            add_to_csv(detail_list)
+            for detail in detail_list:
+                if detail not in master_list:
+                    master_list.append(detail)
+        add_to_csv(master_list, "./csvs/"+state_listings[state_selected.lower()]+".csv")
     else:
         print("sorry that wasn't a valid input.  Exiting")
