@@ -1,5 +1,6 @@
 
 import requests
+import os
 
 from bs4 import BeautifulSoup
 
@@ -49,16 +50,19 @@ def get_dealer_list(city_url):
             details = []
             details.append(dealer.find(class_="dealerName").a.get_text()) # dealer name
             details.append(dealer.find(class_="dealerName").a.get("href")) # dealer web address
-            address = dealer.find(class_="dealerAddress").get_text()
-            details.append(address.replace("\n", " ").split("Distance")[0].strip()) #dealer address sanitized
+            address = dealer.find(class_="dealerAddress").get_text().split("\n\n")
+            details.append(address[0].strip()) # street
+            details.append(address[1].split('\n')[0]) # city
+            details.append(address[1].split('\n')[2].strip()) #state
+            details.append(address[1].split('\n')[3].split('-')[0].strip()) #zipcode
             phone = dealer.find(class_="dealerPhone").get_text()
             details.append(phone.split('\n')[2]) #dealer phone sanitized
             list_of_details.append(details)
     if list_of_details:
         return list_of_details
 
-def add_to_csv(array_to_add):
-    '''takes the array_to_add and adds each index's properties to a file'''
+def add_to_csv(array_to_add, state_csv):
+    '''takes the array_to_add and adds each index's properties to a file for each state'''
     for dealer_details in array_to_add:
 
         for detail in dealer_details:
@@ -66,17 +70,20 @@ def add_to_csv(array_to_add):
             #add each item to the csv
 
 if __name__ == "__main__":
-    #do stuff on startup
 
     state_listings = get_states()
-
+    #should create a new .csv for each state
     for state_abbr in state_listings:
         print(state_abbr, " ", end="")
+        temp = open("./csvs/"+state_listings[state_abbr]+".csv","w")
+        temp.write("Dealer Name,website,street,city,state,zip,phone\n")
+        temp.close()
+
     state_selected = input("input a state abbreviation please: ")
     if state_selected.lower() in state_listings:
         found_cities = get_cities(state_selected.lower())
-        for city_url in found_cities:
-            detail_list = get_dealer_list(city_url)
+        for url_for_city in found_cities:
+            detail_list = get_dealer_list(url_for_city)
             add_to_csv(detail_list)
     else:
         print("sorry that wasn't a valid input.  Exiting")
